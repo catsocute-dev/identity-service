@@ -18,6 +18,8 @@ import com.catsocute.identity_service.dto.response.ApiResponse;
 import com.catsocute.identity_service.model.User;
 import com.catsocute.identity_service.service.UserService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -26,7 +28,7 @@ public class UserController {
 
     // create user
     @PostMapping()
-    ApiResponse<User> createUSer(@RequestBody UserCreationRequest request) {
+    ApiResponse<User> createUSer(@RequestBody @Valid UserCreationRequest request) {
         ApiResponse apiResponse = new ApiResponse<>();
         User user = userService.createUser(request);
 
