@@ -7,5 +7,5 @@ import com.catsocute.identity_service.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
-    
+    boolean existsByUsername(String username);
 }
