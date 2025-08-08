@@ -2,6 +2,8 @@ package com.catsocute.identity_service.service;
 
 import java.util.List;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.catsocute.identity_service.dto.request.UserCreationRequest;
@@ -29,9 +31,11 @@ public class UserService {
             throw new AppException(ErrorCode.USERNAME_EXISTED);
         }
 
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+
         User user = User.builder()
         .username(request.getUsername())
-        .password(request.getPassword())
+        .password(passwordEncoder.encode(request.getPassword()))
         .email(request.getEmail())
         .createdAt(request.getCreatedAt())
         .build();
@@ -58,12 +62,14 @@ public class UserService {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
 
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+
         //get user need to update
         User user = getUser(userId);
 
         //update by toBuilder() -- lombok
         User updatedUser = user.toBuilder()
-        .password(request.getPassword())
+        .password(passwordEncoder.encode(request.getPassword()))
         .email(request.getEmail())
         .build();
 

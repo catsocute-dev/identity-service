@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.catsocute.identity_service.dto.request.UserCreationRequest;
 import com.catsocute.identity_service.dto.request.UserUpdateRequest;
 import com.catsocute.identity_service.dto.response.ApiResponse;
-import com.catsocute.identity_service.dto.response.UserResponse;
 import com.catsocute.identity_service.model.User;
 import com.catsocute.identity_service.service.UserService;
 
@@ -33,64 +32,56 @@ public class UserController {
     // create user
     @PostMapping()
     ApiResponse<User> createUSer(@RequestBody @Valid UserCreationRequest request) {
-        ApiResponse apiResponse = new ApiResponse<>();
         User user = userService.createUser(request);
-
-        apiResponse.setResult(user);
-        return apiResponse;
+        return ApiResponse.<User>builder()
+            .result(user)
+            .build();
     }
 
     // get all users
     @GetMapping()
     ApiResponse<List<User>> getUsers() {
-        ApiResponse apiResponse = new ApiResponse<>();
         List<User> list = userService.getUsers();
-
-        apiResponse.setResult(list);
-        return apiResponse;
+        return ApiResponse.<List<User>>builder()
+            .result(list)
+            .build();
     }
 
     // get user by id
     @GetMapping("/{userId}")
     ApiResponse<User> getUser(@PathVariable("userId") String userId) {
-        ApiResponse apiResponse = new ApiResponse<>();
         User user = userService.getUser(userId);
-
-        apiResponse.setResult(user);
-
-        return apiResponse;
+        return ApiResponse.<User>builder()
+            .result(user)
+            .build();
     }
 
     // update by id
     @PutMapping("/{userId}")
-    ApiResponse<UserResponse> updateUser(@PathVariable("userId") String userId,
+    ApiResponse<User> updateUser(@PathVariable("userId") String userId,
             @RequestBody UserUpdateRequest request) {
-        ApiResponse apiResponse = new ApiResponse<>();
         User user = userService.updateUser(userId, request);
-
-        apiResponse.setResult(user);
-        return apiResponse;
+        return ApiResponse.<User>builder()
+            .result(user)
+            .build();
     }
 
     // delete user by id
     @DeleteMapping("/{userId}")
     ApiResponse<String> deleteUser(@PathVariable("userId") String userId) {
-        ApiResponse apiResponse = new ApiResponse<>();
         userService.deleteUser(userId);
-
-        apiResponse.setResult("Delete successfully!!!");
-        return apiResponse;
+        return ApiResponse.<String>builder()
+            .result("Delete successfully!!!")
+            .build();
     }
 
     // delete all user
     @DeleteMapping()
     ApiResponse<String> deleteAll() {
-        ApiResponse apiResponse = new ApiResponse<>();
-
         userService.deleteAll();
-        apiResponse.setResult("Delete successfully!!!");
-
-        return apiResponse;
+        return ApiResponse.<String>builder()
+            .result("Delete successfully!!!")
+            .build();
     }
 
 }
