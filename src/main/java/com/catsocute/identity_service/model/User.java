@@ -8,24 +8,31 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "users")
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_id")
-    private String userId;
+    String userId;
 
     @Column(name = "user_name")
-    private String username;
-    private String email;
-    private String password;
+    String username;
+    String email;
+    String password;
 
     @Column(name = "created_at")
-    private LocalDate createdAt;
+    LocalDate createdAt;
 }
