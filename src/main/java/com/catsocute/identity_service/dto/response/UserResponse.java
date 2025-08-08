@@ -1,4 +1,6 @@
-package com.catsocute.identity_service.dto.request;
+package com.catsocute.identity_service.dto.response;
+
+import java.time.LocalDate;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -12,7 +14,10 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserUpdateRequest {
+public class UserResponse {
+    String userId;
+    String username;
     String email;
     String password;
+    LocalDate createdAt;
 }

@@ -2,7 +2,6 @@ package com.catsocute.identity_service.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,16 +14,21 @@ import org.springframework.web.bind.annotation.RestController;
 import com.catsocute.identity_service.dto.request.UserCreationRequest;
 import com.catsocute.identity_service.dto.request.UserUpdateRequest;
 import com.catsocute.identity_service.dto.response.ApiResponse;
+import com.catsocute.identity_service.dto.response.UserResponse;
 import com.catsocute.identity_service.model.User;
 import com.catsocute.identity_service.service.UserService;
 
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    @Autowired
-    private UserService userService;
+    UserService userService;
 
     // create user
     @PostMapping()
@@ -59,10 +63,10 @@ public class UserController {
 
     // update by id
     @PutMapping("/{userId}")
-    ApiResponse<User> updateUser(@PathVariable("userId") String userId,
+    ApiResponse<UserResponse> updateUser(@PathVariable("userId") String userId,
             @RequestBody UserUpdateRequest request) {
         ApiResponse apiResponse = new ApiResponse<>();
-        User user = userService.getUser(userId);
+        User user = userService.updateUser(userId, request);
 
         apiResponse.setResult(user);
         return apiResponse;

@@ -2,7 +2,6 @@ package com.catsocute.identity_service.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.catsocute.identity_service.dto.request.UserCreationRequest;
@@ -12,10 +11,15 @@ import com.catsocute.identity_service.exception.ErrorCode;
 import com.catsocute.identity_service.model.User;
 import com.catsocute.identity_service.repository.UserRepository;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
-    @Autowired
-    private UserRepository userRepository;
+    UserRepository userRepository;
 
     //create user
     public User createUser(UserCreationRequest request) {
@@ -54,13 +58,16 @@ public class UserService {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
 
-
+        //get user need to update
         User user = getUser(userId);
 
-        user.setPassword(request.getPassword());
-        user.setEmail(request.getEmail());
+        //update by toBuilder() -- lombok
+        User updatedUser = user.toBuilder()
+        .password(request.getPassword())
+        .email(request.getEmail())
+        .build();
 
-        return userRepository.save(user);
+        return userRepository.save(updatedUser);
     }
 
     //delete user by id
