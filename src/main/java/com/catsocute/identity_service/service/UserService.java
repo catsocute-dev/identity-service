@@ -9,7 +9,6 @@ import com.catsocute.identity_service.dto.request.UserCreationRequest;
 import com.catsocute.identity_service.dto.request.UserUpdateRequest;
 import com.catsocute.identity_service.exception.AppException;
 import com.catsocute.identity_service.exception.ErrorCode;
-import com.catsocute.identity_service.mapper.UserMapper;
 import com.catsocute.identity_service.model.User;
 import com.catsocute.identity_service.repository.UserRepository;
 
@@ -18,9 +17,6 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private UserMapper userMapper;
-
     //create user
     public User createUser(UserCreationRequest request) {
         //validate user existed
@@ -28,8 +24,13 @@ public class UserService {
         if(existed) {
             throw new AppException(ErrorCode.USERNAME_EXISTED);
         }
-        
-        User user = userMapper.toUser(request);
+
+        User user = User.builder()
+        .username(request.getUsername())
+        .password(request.getPassword())
+        .email(request.getEmail())
+        .createdAt(request.getCreatedAt())
+        .build();
         
         return userRepository.save(user);
     }
