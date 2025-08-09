@@ -1,5 +1,6 @@
 package com.catsocute.identity_service.service;
 
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -10,7 +11,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.catsocute.identity_service.dto.request.AuthenticationRequest;
+import com.catsocute.identity_service.dto.request.IntrospectRequest;
 import com.catsocute.identity_service.dto.response.AuthenticationResponse;
+import com.catsocute.identity_service.dto.response.IntrospectResponse;
 import com.catsocute.identity_service.exception.AppException;
 import com.catsocute.identity_service.exception.ErrorCode;
 import com.catsocute.identity_service.model.User;
@@ -19,9 +22,12 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSObject;
+import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +46,7 @@ public class AuthenticationService {
     @NonFinal
     String SIGNER_KEY;
 
+    //authenticate
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var user = userRepository.findByUsername(request.getUsername())
             .orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_EXISTED));
@@ -91,5 +98,26 @@ public class AuthenticationService {
             log.error("Cannot create token");
             throw new RuntimeException();
         }
+    }
+
+    //introspect token
+    public IntrospectResponse introspect(IntrospectRequest request) throws ParseException, JOSEException {
+        //get token from request
+        String token = request.getToken();
+
+        //parse token
+        SignedJWT signedJWT = SignedJWT.parse(token);
+
+        //get expiration time to verify
+        Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        boolean expirationValidated = expirationTime.after(new Date());
+
+        //verify signature
+        JWSVerifier jwsVerifier = new MACVerifier(SIGNER_KEY.getBytes());
+        boolean verified = signedJWT.verify(jwsVerifier);
+
+        return IntrospectResponse.builder()
+            .valid(verified && expirationValidated)
+            .build();
     }
 }
