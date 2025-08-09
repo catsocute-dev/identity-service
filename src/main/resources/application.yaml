@@ -8,3 +8,7 @@ spring:
     url: "jdbc:mysql://localhost:3307/identity-service"
     username: root
     password: "#Lenhat1605?"
+
+security:
+  jwt:
+    signer-key: "RVKlpnBsR+8cxmOWpmNxzEjd4SXDahVTkYZjPtenyryiy+rNKu9yHKyy2CFzutUM"
