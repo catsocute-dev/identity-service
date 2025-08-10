@@ -2,7 +2,7 @@ package com.catsocute.identity_service.service;
 
 import java.util.List;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +22,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
     UserRepository userRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     //create user
     public User createUser(UserCreationRequest request) {
@@ -30,8 +32,6 @@ public class UserService {
         if(existed) {
             throw new AppException(ErrorCode.USERNAME_EXISTED);
         }
-
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
         User user = User.builder()
         .username(request.getUsername())
@@ -61,8 +61,6 @@ public class UserService {
         if(existed == false) {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
-
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
         //get user need to update
         User user = getUser(userId);

@@ -1,6 +1,8 @@
 package com.catsocute.identity_service.model;
 
 import java.time.LocalDate;
+import java.util.Set;
+
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,4 +37,6 @@ public class User {
 
     @Column(name = "created_at")
     LocalDate createdAt;
+
+    Set<String> roles;
 }
