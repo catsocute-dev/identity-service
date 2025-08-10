@@ -1,6 +1,7 @@
 package com.catsocute.identity_service.dto.response;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,6 @@ public class UserResponse {
     String userId;
     String username;
     String email;
-    String password;
     LocalDate createdAt;
+    Set<String> roles;
 }

@@ -1,5 +1,6 @@
 package com.catsocute.identity_service.service;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.catsocute.identity_service.dto.request.UserCreationRequest;
 import com.catsocute.identity_service.dto.request.UserUpdateRequest;
+import com.catsocute.identity_service.enums.Role;
 import com.catsocute.identity_service.exception.AppException;
 import com.catsocute.identity_service.exception.ErrorCode;
 import com.catsocute.identity_service.model.User;
@@ -33,11 +35,15 @@ public class UserService {
             throw new AppException(ErrorCode.USERNAME_EXISTED);
         }
 
+        var roles = new HashSet<String>();
+        roles.add(Role.USER.name());
+
         User user = User.builder()
         .username(request.getUsername())
         .password(passwordEncoder.encode(request.getPassword()))
         .email(request.getEmail())
         .createdAt(request.getCreatedAt())
+        .roles(roles)
         .build();
         
         return userRepository.save(user);

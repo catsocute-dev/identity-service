@@ -1,7 +1,7 @@
 package com.catsocute.identity_service.controller;
 
-import java.util.HashSet;
 import java.util.List;
+
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.catsocute.identity_service.dto.request.UserCreationRequest;
 import com.catsocute.identity_service.dto.request.UserUpdateRequest;
 import com.catsocute.identity_service.dto.response.ApiResponse;
-import com.catsocute.identity_service.enums.Role;
 import com.catsocute.identity_service.model.User;
 import com.catsocute.identity_service.service.UserService;
 
@@ -35,10 +34,6 @@ public class UserController {
     @PostMapping()
     ApiResponse<User> createUSer(@RequestBody @Valid UserCreationRequest request) {
         User user = userService.createUser(request);
-
-        HashSet<String> roles = new HashSet<>();
-        roles.add(Role.USER.name());
-        user.setRoles(roles);
 
         return ApiResponse.<User>builder()
             .result(user)
