@@ -4,11 +4,13 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.StringJoiner;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.catsocute.identity_service.dto.request.AuthenticationRequest;
 import com.catsocute.identity_service.dto.request.IntrospectRequest;
@@ -41,6 +43,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthenticationService {
     UserRepository userRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Value("${security.jwt.signer-key}")
     @NonFinal
@@ -50,8 +54,6 @@ public class AuthenticationService {
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var user = userRepository.findByUsername(request.getUsername())
             .orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_EXISTED));
-
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
         //match password
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
@@ -83,6 +85,7 @@ public class AuthenticationService {
             .expirationTime(
                 Date.from(Instant.now().plus(1, ChronoUnit.HOURS)))
             .claim("userId", user.getUserId())
+            .claim("scope", buildScope(user))
             .build();
         
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
@@ -98,6 +101,18 @@ public class AuthenticationService {
             log.error("Cannot create token");
             throw new RuntimeException();
         }
+    }
+
+    //build scope
+    private String buildScope(User user) {
+        StringJoiner stringJoiner = new StringJoiner(" ");
+        boolean existed = CollectionUtils.isEmpty(user.getRoles());
+        
+        if(!existed) {
+            user.getRoles().forEach(s -> stringJoiner.add(s));
+        }
+
+        return stringJoiner.toString();
     }
 
     //introspect token
