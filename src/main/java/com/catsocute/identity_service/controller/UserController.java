@@ -34,7 +34,6 @@ public class UserController {
     @PostMapping()
     ApiResponse<User> createUSer(@RequestBody @Valid UserCreationRequest request) {
         User user = userService.createUser(request);
-
         return ApiResponse.<User>builder()
             .result(user)
             .build();
@@ -78,7 +77,7 @@ public class UserController {
     }
 
     // delete all user
-    @DeleteMapping()
+    @DeleteMapping("/delete/all")
     ApiResponse<String> deleteAll() {
         userService.deleteAll();
         return ApiResponse.<String>builder()
