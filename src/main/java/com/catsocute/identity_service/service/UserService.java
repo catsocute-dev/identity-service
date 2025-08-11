@@ -4,6 +4,9 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -50,6 +53,7 @@ public class UserService {
     }
 
     //get all users
+    @PreAuthorize("hasRole('ADMIN')")
     public List<User> getUsers() {
         return userRepository.findAll();
     }
@@ -58,6 +62,18 @@ public class UserService {
     public User getUser(String id) {
         return userRepository.findById(id)
             .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+    }
+
+    //get my info
+    public User getMyInfo() {
+        SecurityContext context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName(); //getName() -> jwt.getSubject
+
+        //get current user
+        User user = userRepository.findByUsername(name)
+            .orElseThrow(() -> new AppException(ErrorCode.USERNAME_NOT_EXISTED));
+
+        return user;
     }
 
     //update user
@@ -86,6 +102,7 @@ public class UserService {
     }
 
     //delete all users
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteAll() {
         userRepository.deleteAll();
     }
