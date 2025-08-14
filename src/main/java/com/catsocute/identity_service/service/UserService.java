@@ -1,5 +1,6 @@
 package com.catsocute.identity_service.service;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class UserService {
         .username(request.getUsername())
         .password(passwordEncoder.encode(request.getPassword()))
         .email(request.getEmail())
-        .createdAt(request.getCreatedAt())
+        .createdAt(LocalDate.now())
         .roles(roles)
         .build();
         

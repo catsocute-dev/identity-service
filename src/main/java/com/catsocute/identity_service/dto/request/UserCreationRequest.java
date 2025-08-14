@@ -1,7 +1,5 @@
 package com.catsocute.identity_service.dto.request;
 
-import java.time.LocalDate;
-
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -21,5 +19,4 @@ public class UserCreationRequest {
     String email;
     @Size(min = 8, message = "PASSWORD_INVALID")
     String password;
-    LocalDate createdAt;
 }

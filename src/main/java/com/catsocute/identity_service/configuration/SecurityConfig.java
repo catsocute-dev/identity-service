@@ -27,8 +27,8 @@ public class SecurityConfig {
 
     private final String[] PUBLIC_POST_ENDPOINT = {
             "/users",
-            "auth/log-in",
-            "auth/introspect"
+            "/auth/log-in",
+            "/auth/introspect"
     };
 
     // private final String[] ADMIN_GET_ENDPOINT = {
