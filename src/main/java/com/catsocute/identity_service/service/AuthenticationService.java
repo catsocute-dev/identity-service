@@ -109,7 +109,7 @@ public class AuthenticationService {
         boolean existed = CollectionUtils.isEmpty(user.getRoles());
         
         if(!existed) {
-            user.getRoles().forEach(s -> stringJoiner.add(s));
+            // user.getRoles().forEach(s -> stringJoiner.add(s));
         }
 
         return stringJoiner.toString();

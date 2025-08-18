@@ -47,7 +47,7 @@ public class UserService {
         .password(passwordEncoder.encode(request.getPassword()))
         .email(request.getEmail())
         .createdAt(LocalDate.now())
-        .roles(roles)
+        // .roles(roles)
         .build();
         
         return userRepository.save(user);

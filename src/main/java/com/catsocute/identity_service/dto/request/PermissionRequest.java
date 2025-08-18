@@ -1,10 +1,5 @@
-package com.catsocute.identity_service.model;
+package com.catsocute.identity_service.dto.request;
 
-import java.util.Set;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,12 +12,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-@Entity
-public class Role {
-    @Id
+public class PermissionRequest {
     String name;
     String description;
-
-    @ManyToMany
-    Set<Permission> permissions;
 }
