@@ -1,6 +1,6 @@
 package com.catsocute.identity_service.enums;
 
-public enum Role {
+public enum RolesEnum {
     ADMIN,
     USER
 }

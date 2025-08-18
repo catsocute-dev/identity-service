@@ -1,5 +1,7 @@
 package com.catsocute.identity_service.dto.request;
 
+import java.util.List;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,4 +17,5 @@ import lombok.experimental.FieldDefaults;
 public class UserUpdateRequest {
     String email;
     String password;
+    List<String> roles;
 }

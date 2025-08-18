@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,10 +12,12 @@ import org.springframework.stereotype.Service;
 
 import com.catsocute.identity_service.dto.request.UserCreationRequest;
 import com.catsocute.identity_service.dto.request.UserUpdateRequest;
-import com.catsocute.identity_service.enums.Role;
+import com.catsocute.identity_service.enums.RolesEnum;
 import com.catsocute.identity_service.exception.AppException;
 import com.catsocute.identity_service.exception.ErrorCode;
+import com.catsocute.identity_service.model.Role;
 import com.catsocute.identity_service.model.User;
+import com.catsocute.identity_service.repository.RoleRepository;
 import com.catsocute.identity_service.repository.UserRepository;
 
 import lombok.AccessLevel;
@@ -28,8 +29,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
     UserRepository userRepository;
-    @Autowired
     PasswordEncoder passwordEncoder;
+    RoleRepository roleRepository;
 
     //create user
     public User createUser(UserCreationRequest request) {
@@ -39,15 +40,18 @@ public class UserService {
             throw new AppException(ErrorCode.USERNAME_EXISTED);
         }
 
-        var roles = new HashSet<String>();
-        roles.add(Role.USER.name());
+        //set role USER for new user
+        Role role = roleRepository.findById(RolesEnum.USER.name())
+            .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED));
+        HashSet<Role> roles = new HashSet<>();
+        roles.add(role);
 
         User user = User.builder()
         .username(request.getUsername())
         .password(passwordEncoder.encode(request.getPassword()))
         .email(request.getEmail())
         .createdAt(LocalDate.now())
-        // .roles(roles)
+        .roles(roles) //default role = USER
         .build();
         
         return userRepository.save(user);

@@ -56,6 +56,7 @@ public class UserController {
             .build();
     }
 
+    //get myinfo
     @GetMapping("/myinfo")
     ApiResponse<User> getMyInfo() {
         User user = userService.getMyInfo();
