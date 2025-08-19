@@ -1,5 +1,8 @@
 package com.catsocute.identity_service.configuration;
 
+import java.util.HashSet;
+import java.util.List;
+
 import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -9,13 +12,14 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 import lombok.experimental.NonFinal;
@@ -32,8 +36,8 @@ public class SecurityConfig {
     };
 
     // private final String[] ADMIN_GET_ENDPOINT = {
-    //         "/users",
-    //         "/delete/all"
+    // "/users",
+    // "/delete/all"
     // };
 
     @NonFinal
@@ -48,8 +52,7 @@ public class SecurityConfig {
 
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
                 .jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
-            );
+                .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
 
         // disable csrf
         httpSecurity.csrf(httpSecurityCsrfconfigurer -> httpSecurityCsrfconfigurer.disable());
@@ -59,11 +62,25 @@ public class SecurityConfig {
 
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
-
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
+            HashSet<GrantedAuthority> authorities = new HashSet<>();
+
+            //get roles
+            List<String> roles = jwt.getClaimAsStringList("scopes");
+            if(roles != null) {
+                roles.forEach(role -> authorities.add(new SimpleGrantedAuthority("ROLE_")));
+            }
+
+            //get permissions
+            List<String> permissions = jwt.getClaimAsStringList("permissions");
+            if(permissions != null) {
+                permissions.forEach(permission -> authorities.add(new SimpleGrantedAuthority(permission)));
+            }
+
+            return authorities;
+        });
 
         return jwtAuthenticationConverter;
     }

@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.StringJoiner;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +87,8 @@ public class AuthenticationService {
             .expirationTime(
                 Date.from(Instant.now().plus(1, ChronoUnit.HOURS)))
             .claim("userId", user.getUserId())
-            .claim("scope", buildScope(user))
+            .claim("scopes", buildScope(user))
+            .claim("permissions", buildPermission(user))
             .build();
         
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
@@ -106,13 +109,28 @@ public class AuthenticationService {
     //build scope
     private String buildScope(User user) {
         StringJoiner stringJoiner = new StringJoiner(" ");
-        boolean existed = CollectionUtils.isEmpty(user.getRoles());
+        boolean isEmpty = CollectionUtils.isEmpty(user.getRoles());
         
-        if(!existed) {
-            // user.getRoles().forEach(s -> stringJoiner.add(s));
+        if(!isEmpty) {
+            user.getRoles().forEach(role -> stringJoiner.add(role.getName()));
         }
 
         return stringJoiner.toString();
+    }
+
+    //build permission
+    private Set<String> buildPermission(User user) {
+        HashSet<String> permissions = new HashSet<>();
+        boolean isEmpty = CollectionUtils.isEmpty(user.getRoles());
+
+        if(!isEmpty) {
+            user.getRoles().forEach(role -> 
+                role.getPermissions().forEach(permission -> 
+                    permissions.add(permission.getName()))
+            );
+        }
+
+        return permissions;
     }
 
     //introspect token

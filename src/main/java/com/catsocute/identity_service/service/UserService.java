@@ -92,10 +92,15 @@ public class UserService {
         //get user need to update
         User user = getUser(userId);
 
+        //get role to update
+        List<Role> roleList = roleRepository.findAllById(request.getRoles());
+        HashSet<Role> roleSet = new HashSet<>(roleList);
+
         //update by toBuilder() -- lombok
         User updatedUser = user.toBuilder()
         .password(passwordEncoder.encode(request.getPassword()))
         .email(request.getEmail())
+        .roles(roleSet)
         .build();
 
         return userRepository.save(updatedUser);
