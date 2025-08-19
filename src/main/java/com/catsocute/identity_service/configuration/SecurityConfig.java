@@ -32,7 +32,8 @@ public class SecurityConfig {
     private final String[] PUBLIC_POST_ENDPOINT = {
             "/users",
             "/auth/log-in",
-            "/auth/introspect"
+            "/auth/introspect",
+            "/auth/refresh"
     };
 
     // private final String[] ADMIN_GET_ENDPOINT = {
@@ -67,15 +68,15 @@ public class SecurityConfig {
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
             HashSet<GrantedAuthority> authorities = new HashSet<>();
 
-            //get roles
+            // get roles
             List<String> roles = jwt.getClaimAsStringList("scope");
-            if(roles != null) {
+            if (roles != null) {
                 roles.forEach(role -> authorities.add(new SimpleGrantedAuthority("ROLE_" + role)));
             }
 
-            //get permissions
+            // get permissions
             List<String> permissions = jwt.getClaimAsStringList("permissions");
-            if(permissions != null) {
+            if (permissions != null) {
                 permissions.forEach(permission -> authorities.add(new SimpleGrantedAuthority(permission)));
             }
 
