@@ -68,9 +68,9 @@ public class SecurityConfig {
             HashSet<GrantedAuthority> authorities = new HashSet<>();
 
             //get roles
-            List<String> roles = jwt.getClaimAsStringList("scopes");
+            List<String> roles = jwt.getClaimAsStringList("scope");
             if(roles != null) {
-                roles.forEach(role -> authorities.add(new SimpleGrantedAuthority("ROLE_")));
+                roles.forEach(role -> authorities.add(new SimpleGrantedAuthority("ROLE_" + role)));
             }
 
             //get permissions

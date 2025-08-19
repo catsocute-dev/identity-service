@@ -87,7 +87,7 @@ public class AuthenticationService {
             .expirationTime(
                 Date.from(Instant.now().plus(1, ChronoUnit.HOURS)))
             .claim("userId", user.getUserId())
-            .claim("scopes", buildScope(user))
+            .claim("scope", buildScope(user))
             .claim("permissions", buildPermission(user))
             .build();
         

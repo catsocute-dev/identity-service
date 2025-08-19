@@ -58,7 +58,7 @@ public class UserService {
     }
 
     //get all users
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public List<User> getUsers() {
         return userRepository.findAll();
     }
